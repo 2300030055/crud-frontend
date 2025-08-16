@@ -13,7 +13,7 @@ function App() {
   const [products, setProducts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
 
-  const BASE_URL = 'http://localhost:9090';
+  const BASE_URL = 'http://localhost:8082/crud';
 
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
