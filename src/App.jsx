@@ -116,7 +116,7 @@ function App() {
                 className="form-control"
                 value={product.os}
                 onChange={handleChange}
-                required
+                
               />
             </div>
           </div>
