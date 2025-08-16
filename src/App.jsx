@@ -13,10 +13,12 @@ function App() {
   const [products, setProducts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
 
+  const BASE_URL = 'http://localhost:9090';
+
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
   };
-const BASE_URL = 'http://localhost:8082/springapp1';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -46,15 +48,21 @@ const BASE_URL = 'http://localhost:8082/springapp1';
     setIsEditing(true);
   };
 
-  /*
   const deleteProduct = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
-      await axios.delete(`${BASE_URL}/delete/${id}`);
-      alert('Delete successful');
-      fetchProducts();
+      try {
+        const res = await axios.delete(`${BASE_URL}/delete/${id}`);
+        alert(res.data);         // "Product deleted successfully" or "Product not found"
+        fetchProducts();         // refresh the list
+      } catch (error) {
+        if (error.response) {
+          alert(error.response.data);
+        } else {
+          alert('Failed to delete product. Please try again.');
+        }
+      }
     }
   };
-  */
 
   useEffect(() => {
     fetchProducts();
@@ -63,7 +71,9 @@ const BASE_URL = 'http://localhost:8082/springapp1';
   return (
     <div className="container mt-4">
       <div className="form-container">
-        <h2 className="text-center mb-4">{isEditing ? 'Edit Product' : 'Add Product'}</h2>
+        <h2 className="text-center mb-4">
+          {isEditing ? 'Edit Product' : 'Add Product'}
+        </h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group row">
             <label htmlFor="id" className="col-sm-3 col-form-label form-label">ID:</label>
@@ -80,6 +90,7 @@ const BASE_URL = 'http://localhost:8082/springapp1';
               />
             </div>
           </div>
+
           <div className="form-group row">
             <label htmlFor="name" className="col-sm-3 col-form-label form-label">Name:</label>
             <div className="col-sm-9">
@@ -94,6 +105,7 @@ const BASE_URL = 'http://localhost:8082/springapp1';
               />
             </div>
           </div>
+
           <div className="form-group row">
             <label htmlFor="os" className="col-sm-3 col-form-label form-label">OS:</label>
             <div className="col-sm-9">
@@ -108,6 +120,7 @@ const BASE_URL = 'http://localhost:8082/springapp1';
               />
             </div>
           </div>
+
           <div className="form-group row">
             <label htmlFor="price" className="col-sm-3 col-form-label form-label">Price:</label>
             <div className="col-sm-9">
@@ -122,6 +135,7 @@ const BASE_URL = 'http://localhost:8082/springapp1';
               />
             </div>
           </div>
+
           <div className="text-center mt-3">
             <button type="submit" className="btn btn-primary">
               {isEditing ? 'Update' : 'Insert'}
@@ -167,14 +181,14 @@ const BASE_URL = 'http://localhost:8082/springapp1';
                 >
                   Edit
                 </button>
-                {/*
+
                 <button
                   className="btn btn-danger btn-sm"
                   onClick={() => deleteProduct(p.id)}
                 >
                   Delete
                 </button>
-                */}
+                
               </td>
             </tr>
           ))}
