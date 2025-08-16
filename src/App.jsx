@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
+import ConfirmModal from './ConfirmModal';
 
 function App() {
   const [product, setProduct] = useState({
@@ -12,6 +13,8 @@ function App() {
 
   const [products, setProducts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
 
   const BASE_URL = 'http://localhost:8082';
 
@@ -48,20 +51,23 @@ function App() {
     setIsEditing(true);
   };
 
-  const deleteProduct = async (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      try {
-        const res = await axios.delete(`${BASE_URL}/delete/${id}`);
-        alert(res.data);         // "Product deleted successfully" or "Product not found"
-        fetchProducts();         // refresh the list
-      } catch (error) {
-        if (error.response) {
-          alert(error.response.data);
-        } else {
-          alert('Failed to delete product. Please try again.');
-        }
-      }
+  // Trigger Modal
+  const handleDeleteClick = (id) => {
+    setSelectedId(id);
+    setShowModal(true);
+  };
+
+  // Confirm Modal Delete
+  const confirmDelete = async () => {
+    try {
+      const res = await axios.delete(`${BASE_URL}/delete/${selectedId}`);
+      alert(res.data);
+      fetchProducts();
+    } catch (error) {
+      alert('Failed to delete product');
     }
+    setShowModal(false);
+    setSelectedId(null);
   };
 
   useEffect(() => {
@@ -115,9 +121,8 @@ function App() {
                 id="os"
                 className="form-control"
                 value={product.os}
-                onChange={handleChange}
-                
-              />
+                onChange={handleChange}/>
+
             </div>
           </div>
 
@@ -181,19 +186,26 @@ function App() {
                 >
                   Edit
                 </button>
-
                 <button
                   className="btn btn-danger btn-sm"
-                  onClick={() => deleteProduct(p.id)}
+                  onClick={() => handleDeleteClick(p.id)}
                 >
                   Delete
                 </button>
-                
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Popup Modal */}
+      {showModal && (
+        <ConfirmModal
+          message="Are you sure you want to delete this product?"
+          onConfirm={confirmDelete}
+          onCancel={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 }
